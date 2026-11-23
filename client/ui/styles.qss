@@ -1,0 +1,316 @@
+/* Force Inter */
+QWidget { font-family: "Inter", sans-serif; }
+
+/* QuizForge — оптимізована темна тема */
+
+QWidget {
+    font-family: "Inter", "Segoe UI Variable", "Segoe UI", "Noto Sans", sans-serif;
+    font-size: 14px;
+    background-color: #0f1117;
+    color: #e2e8f0;
+}
+
+QMainWindow, QDialog { background-color: #0f1117; }
+
+QLabel#titleLabel { font-size: 22px; font-weight: 600; color: #ffffff; }
+QLabel#subtitleLabel { font-size: 13px; color: #94a3b8; }
+QLabel#logoLabel { font-size: 20px; font-weight: 700; color: #ffffff; }
+
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QComboBox {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #f1f5f9;
+    selection-background-color: #3b82f6;
+}
+QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus, QComboBox:focus, QSpinBox:focus {
+    border-color: #3b82f6;
+}
+
+QPushButton {
+    background-color: #3b82f6;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    min-height: 22px;
+}
+QPushButton:hover { background-color: #3b82f6; }
+QPushButton:pressed { background-color: #1d4ed8; }
+QPushButton:disabled { background-color: #475569; color: #94a3b8; }
+QPushButton#secondaryButton { background-color: #334155; color: #e2e8f0; }
+QPushButton#secondaryButton:hover { background-color: #475569; }
+QPushButton#dangerButton { background-color: #ef4444; }
+QPushButton#dangerButton:hover { background-color: #dc2626; }
+
+QTabWidget::pane { border: 1px solid #334155; border-radius: 8px; background: #0f1117; }
+QTabBar::tab {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 10px 18px;
+    margin-right: 2px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+QTabBar::tab:selected { background: #0f1117; color: #3b82f6; font-weight: 600; }
+QTabBar::tab:hover:!selected { background: #334155; color: #e2e8f0; }
+
+QTableWidget, QTableView {
+    background-color: #1e293b;
+    alternate-background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    gridline-color: #334155;
+    selection-background-color: #1e40af;
+    selection-color: #ffffff;
+    outline: none;
+}
+QHeaderView::section {
+    background-color: #0f172a;
+    color: #94a3b8;
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 1px solid #334155;
+    font-weight: 600;
+    font-size: 13px;
+}
+QHeaderView::section:hover { background-color: #1e293b; color: #e2e8f0; }
+QTableCornerButton::section { background-color: #0f172a; border: none; border-bottom: 1px solid #334155; }
+QTableWidget::item, QTableView::item { padding: 8px 12px; border: none; }
+QTableWidget::item:selected, QTableView::item:selected { background-color: #1e40af; }
+QTableWidget::item:hover, QTableView::item:hover { background-color: #334155; }
+
+QScrollBar:vertical { background: #1e293b; width: 10px; margin: 0; }
+QScrollBar::handle:vertical { background: #475569; border-radius: 5px; min-height: 30px; }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+QScrollBar:horizontal { background: #1e293b; height: 10px; }
+QScrollBar::handle:horizontal { background: #475569; border-radius: 5px; min-width: 30px; }
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
+
+QGroupBox {
+    border: 1px solid #334155;
+    border-radius: 8px;
+    margin-top: 14px;
+    padding: 16px 12px 12px 12px;
+    font-weight: 600;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 12px;
+    padding: 0 6px;
+    color: #3b82f6;
+}
+
+QCheckBox, QRadioButton { spacing: 8px; }
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #475569;
+    background: #1e293b;
+}
+QCheckBox::indicator { border-radius: 4px; }
+QRadioButton::indicator { border-radius: 9px; border-width: 2px; }
+QCheckBox::indicator:hover, QRadioButton::indicator:hover { border-color: #3b82f6; }
+QCheckBox::indicator:checked, QRadioButton::indicator:checked {
+    background: #3b82f6;
+    border-color: #3b82f6;
+}
+
+QStatusBar { background: #0f172a; color: #94a3b8; }
+
+QFrame#card {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+}
+
+QListWidget {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    outline: none;
+}
+QListWidget::item { padding: 8px 12px; }
+QListWidget::item:selected { background-color: #1e40af; }
+QListWidget::item:hover { background-color: #334155; }
+
+/* Sidebar */
+QWidget#sidebar {
+    background-color: #0f172a;
+    border-right: 1px solid #334155;
+}
+QPushButton#sidebarButton {
+    background-color: transparent;
+    color: #94a3b8;
+    text-align: left;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+QPushButton#sidebarButton:hover {
+    background-color: #1e293b;
+    color: #e2e8f0;
+}
+QPushButton#sidebarButton:checked {
+    background-color: #1e40af;
+    color: #ffffff;
+}
+
+/* ===== Покращення під макети ===== */
+
+/* Кращі картки */
+QFrame#card, QWidget#card {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 24px;
+}
+
+/* Великі кнопки як у макетах */
+QPushButton {
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+QPushButton#primaryButton {
+    background-color: #3b82f6;
+    color: white;
+    min-height: 44px;
+}
+QPushButton#primaryButton:hover { background-color: #2563eb; }
+
+/* Поля вводу як у макетах */
+QLineEdit, QTextEdit {
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 15px;
+    min-height: 20px;
+}
+
+/* Заголовки */
+QLabel#titleLabel {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+QLabel#subtitleLabel {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+/* Таблиці — чистіші */
+QTableWidget {
+    border-radius: 12px;
+    gridline-color: transparent;
+}
+QHeaderView::section {
+    border-bottom: 2px solid #334155;
+    padding: 12px 16px;
+}
+
+/* Адаптивність і шрифти */
+QWidget {
+    font-family: "Inter", "Segoe UI Variable", "Noto Sans", sans-serif;
+}
+
+QPushButton {
+    min-width: 100px;
+    max-width: 280px;
+}
+
+/* Контент не розлазиться */
+QStackedWidget, QScrollArea {
+    min-width: 0;
+}
+
+/* Кращі шрифти для таблиць */
+QTableWidget, QHeaderView {
+    font-family: "Inter", "Segoe UI", sans-serif;
+    font-size: 13px;
+}
+
+/* ===== Менше дефолту ===== */
+
+/* Кращі кнопки */
+QPushButton {
+    border-radius: 10px;
+    padding: 11px 22px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+QPushButton:hover {
+    background-color: #2563eb;
+}
+QPushButton:pressed {
+    background-color: #1d4ed8;
+    padding-top: 12px;
+    padding-bottom: 10px;
+}
+
+/* Поля вводу з м’яким фокусом */
+QLineEdit, QTextEdit, QComboBox, QSpinBox {
+    border-radius: 10px;
+    padding: 10px 14px;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+}
+QLineEdit:focus, QTextEdit:focus, QComboBox:focus {
+    border: 1px solid #3b82f6;
+    background-color: #0f172a;
+}
+
+/* Таблиці — чистіші */
+QTableWidget {
+    border: none;
+    border-radius: 12px;
+    background-color: #1e293b;
+}
+QHeaderView::section {
+    background-color: #0f172a;
+    border: none;
+    border-bottom: 1px solid #334155;
+    padding: 12px 14px;
+    font-weight: 600;
+}
+
+/* Сайдбар — більш сучасний */
+QPushButton#sidebarButton {
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 2px 0;
+}
+QPushButton#sidebarButton:checked {
+    background-color: #1e40af;
+    color: white;
+    font-weight: 600;
+}
+
+/* Діалоги */
+QDialog {
+    border-radius: 12px;
+}
+
+/* Адаптивна верстка */
+QSplitter::handle {
+    background: #334155;
+    width: 6px;
+}
+QSplitter::handle:hover {
+    background: #3b82f6;
+}
+
+QScrollArea {
+    border: none;
+    background: transparent;
+}
+
+/* Fluid buttons */
+QPushButton {
+    min-width: 80px;
+}

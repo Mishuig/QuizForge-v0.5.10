@@ -181,7 +181,11 @@ class MainWindow(QMainWindow):
 
         self.btn_tests = QPushButton("Тести")
         self.btn_users = QPushButton("Користувачі")
-        self.btn_results = QPushButton("Результати")
+        self.btn_results = QPushButton
+        self.btn_theme = QPushButton("Тема")
+        self.btn_theme.setObjectName("navTab")
+        self.btn_theme.clicked.connect(self._toggle_theme)
+("Результати")
         for b in (self.btn_tests, self.btn_users, self.btn_results):
             b.setObjectName("navTab")
             b.setCheckable(True)

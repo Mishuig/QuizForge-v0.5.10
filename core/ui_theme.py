@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
-QSS_PATH = ROOT / "client" / "ui" / "styles.qss"
+QSS_DARK = ROOT / "client" / "ui" / "styles.qss"
+QSS_LIGHT = ROOT / "client" / "ui" / "styles-light.qss"
 DEFAULT_ACCENT = "#3b82f6"
 
 # Кольори статусів (текст на темному тлі, контраст ≥ 4.5:1)
@@ -54,9 +55,10 @@ def _load_fonts(app: QApplication) -> None:
         app.setFont(QFont(family, 10))
 
 
-def apply_theme(app: QApplication, accent: str | None = None) -> None:
-    """Застосовує тему до всього застосунку."""
+def apply_theme(app: QApplication, accent: str | None = None, theme: str = "dark") -> None:
+    """Застосовує тему до всього застосунку. theme: 'dark' | 'light'"""
     accent = accent or DEFAULT_ACCENT
+    theme = theme if theme in ("dark", "light") else "dark"
     if not QColor(accent).isValid():
         accent = DEFAULT_ACCENT
     _load_fonts(app)

@@ -34,5 +34,6 @@
     "RustDesk.exe",
     "chrome_remote_desktop_host.exe"
   ],
-  "admin_password_hash": ""
+  "admin_password_hash": "",
+  "theme": "dark"
 }

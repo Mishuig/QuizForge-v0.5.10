@@ -1,0 +1,86 @@
+name: Portable Windows (UI/UX Remaster)
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: ver
+        shell: bash
+        run: |
+          if [ -n "${GITHUB_REF_NAME}" ] && [[ "${GITHUB_REF_NAME}" == v* ]]; then
+            echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=uiux-remaster-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pytest
+
+      - name: Run tests
+        run: python -m pytest tests/ -q --tb=line
+
+      - name: Build Client
+        shell: cmd
+        run: |
+          pyinstaller --noconfirm --onefile --windowed ^
+            --name QuizForge-Client ^
+            --add-data "assets;assets" ^
+            --add-data "client/ui;client/ui" ^
+            --add-data "fonts;fonts" ^
+            --hidden-import core ^
+            --collect-all PyQt6 ^
+            --paths . ^
+            client/main.py
+
+      - name: Build Admin
+        shell: cmd
+        run: |
+          pyinstaller --noconfirm --onefile --windowed ^
+            --name QuizForge-Admin ^
+            --add-data "assets;assets" ^
+            --add-data "client/ui;client/ui" ^
+            --add-data "fonts;fonts" ^
+            --hidden-import core ^
+            --collect-all PyQt6 ^
+            --paths . ^
+            admin/main.py
+
+      - name: Create portable folder
+        shell: cmd
+        run: |
+          mkdir portable
+          copy /Y dist\QuizForge-Client.exe portable\
+          copy /Y dist\QuizForge-Admin.exe portable\
+          copy /Y config.json.example portable\config.json
+          copy /Y README.md portable\
+          copy /Y FIRST_RUN.md portable\
+          copy /Y LICENSE portable\
+          if exist VERSION copy /Y VERSION portable\
+          if exist assets xcopy /E /I /Y assets portable\assets
+          if exist fonts xcopy /E /I /Y fonts portable\fonts
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuizForge-Portable-Windows-${{ steps.ver.outputs.version }}
+          path: portable/
+          retention-days: 30

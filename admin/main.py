@@ -33,6 +33,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from core.config_loader import load_config
+from core.ui_theme import ASSETS, apply_theme, logo_pixmap
 from core.db import get_db
 from core.admin_auth import is_password_set, set_password, verify_password
 from admin.tests_tab import TestsTab
@@ -47,44 +48,18 @@ logging.basicConfig(
 logger = logging.getLogger("admin")
 
 
-def apply_styles(app: QApplication, accent: str = "#3b82f6") -> None:
-    # Explicitly load Inter
-    try:
-        from PyQt6.QtGui import QFontDatabase, QFont
-        fid = QFontDatabase.addApplicationFont("/usr/share/fonts/opentype/inter/Inter-Regular.otf")
-        if fid != -1:
-            fams = QFontDatabase.applicationFontFamilies(fid)
-            if fams:
-                app.setFont(QFont(fams[0], 10))
-    except Exception:
-        pass
-    qss_path = ROOT / "client" / "ui" / "styles.qss"
-    if qss_path.is_file():
-        with open(qss_path, "r", encoding="utf-8") as f:
-            qss = f.read()
-        qss = qss.replace("#3b82f6", accent)
-        try:
-            from PyQt6.QtGui import QFontDatabase, QFont,  QGuiApplication
-            scheme = QGuiApplication.styleHints().colorScheme()
-            is_dark = scheme == Qt.ColorScheme.Dark
-        except Exception:
-            is_dark = False
-        app.setStyleSheet(qss)
-
-
 class PasswordDialog(QDialog):
     """Встановлення або введення пароля адміна."""
 
     def __init__(self, mode: str = "login", parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.mode = mode  # "login" | "setup"
-        self.setWindowTitle
+        self.setWindowTitle("QuizForge — Адмін")
         try:
             from PyQt6.QtGui import QIcon
-            self.setWindowIcon(QIcon("assets/logo-admin.ico"))
+            self.setWindowIcon(QIcon(str(ASSETS / "logo-admin.ico")))
         except Exception:
             pass
-        ("QuizForge — Адмін")
         self.setMinimumWidth(400)
         self.setMinimumHeight(320)
 
@@ -100,9 +75,9 @@ class PasswordDialog(QDialog):
         logo_layout.setSpacing(12)
         logo_label = QLabel()
         try:
-            pixmap = QPixmap("assets/logo-admin.svg")
+            pixmap = logo_pixmap("logo-admin.svg", 64)
             if not pixmap.isNull():
-                logo_label.setPixmap(pixmap.scaled(64, 64, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+                logo_label.setPixmap(pixmap)
         except Exception:
             pass
         logo_layout.addWidget(logo_label)
@@ -144,6 +119,7 @@ class PasswordDialog(QDialog):
         )
         buttons.button(QDialogButtonBox.StandardButton.Ok).setText("Увійти")
         buttons.button(QDialogButtonBox.StandardButton.Cancel).setText("Скасувати")
+        buttons.button(QDialogButtonBox.StandardButton.Ok).setObjectName("primaryButton")
         buttons.accepted.connect(self._validate)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
@@ -180,45 +156,39 @@ class MainWindow(QMainWindow):
 
         central = QWidget()
         self.setCentralWidget(central)
-        root = QHBoxLayout(central)
+        root = QVBoxLayout(central)
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
-        # Sidebar
-        sidebar = QWidget()
-        sidebar.setFixedWidth(220)
-        sidebar.setObjectName("sidebar")
-        side_layout = QVBoxLayout(sidebar)
-        side_layout.setContentsMargins(12, 20, 12, 20)
-        side_layout.setSpacing(8)
+        # Верхня панель: логотип + вкладки
+        topbar = QWidget()
+        topbar.setObjectName("topbar")
+        topbar.setFixedHeight(56)
+        bar = QHBoxLayout(topbar)
+        bar.setContentsMargins(24, 0, 24, 0)
+        bar.setSpacing(0)
 
-        logo_row = QHBoxLayout()
         logo = QLabel()
-        try:
-            pix = QPixmap("assets/logo-admin.svg")
-            if not pix.isNull():
-                logo.setPixmap(pix.scaled(64, 64, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
-        except Exception:
-            pass
-        logo_row.addWidget(logo)
+        pix = logo_pixmap("logo-admin.svg", 28)
+        if not pix.isNull():
+            logo.setPixmap(pix)
+        bar.addWidget(logo)
+        bar.addSpacing(10)
         title = QLabel("QuizForge")
         title.setObjectName("logoLabel")
-        logo_row.addWidget(title)
-        logo_row.addStretch()
-        side_layout.addLayout(logo_row)
-        side_layout.addSpacing(20)
+        bar.addWidget(title)
+        bar.addSpacing(28)
 
         self.btn_tests = QPushButton("Тести")
         self.btn_users = QPushButton("Користувачі")
         self.btn_results = QPushButton("Результати")
         for b in (self.btn_tests, self.btn_users, self.btn_results):
-            b.setObjectName("sidebarButton")
+            b.setObjectName("navTab")
             b.setCheckable(True)
-            b.setSizePolicy(b.sizePolicy().horizontalPolicy(), b.sizePolicy().verticalPolicy())
-            side_layout.addWidget(b)
-
-        side_layout.addStretch()
-        root.addWidget(sidebar)
+            b.setCursor(Qt.CursorShape.PointingHandCursor)
+            bar.addWidget(b)
+        bar.addStretch(1)
+        root.addWidget(topbar)
 
         # Content stack
         self.stack = QStackedWidget()
@@ -261,7 +231,7 @@ def main() -> int:
     org = config.get("organization", {})
     org_name = org.get("name", "SecureTest")
     accent = org.get("accent_color", "#3b82f6")
-    apply_styles(app, accent)
+    apply_theme(app, accent)
 
     # Пароль адмінки
     if not is_password_set(config):

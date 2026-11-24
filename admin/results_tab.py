@@ -28,6 +28,7 @@ from PyQt6.QtWidgets import (
 )
 
 from core.db import Database
+from core.ui_theme import colored_item, status_item
 from core.report_builder import build_report, send_report
 
 logger = logging.getLogger(__name__)
@@ -236,23 +237,13 @@ class ResultsTab(QWidget):
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(16, 12, 16, 12)
+        root.setContentsMargins(32, 24, 32, 20)
         root.setSpacing(12)
 
-        # Хедер з лого
         header = QHBoxLayout()
         header.setSpacing(10)
-        logo_label = QLabel()
-        try:
-            pixmap = QPixmap("assets/logo-admin.svg")
-            if not pixmap.isNull():
-                logo_label.setPixmap(pixmap.scaled(40, 40, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
-        except Exception:
-            pass
-        header.addWidget(logo_label)
         title = QLabel("Результати")
         title.setObjectName("titleLabel")
-        title.setStyleSheet("font-size: 18px;")
         header.addWidget(title)
         header.addStretch()
         root.addLayout(header)
@@ -286,7 +277,7 @@ class ResultsTab(QWidget):
         btns = QHBoxLayout()
         btns.setSpacing(8)
         self.btn_details = QPushButton("Деталі")
-        self.btn_details.setObjectName("secondaryButton")
+        self.btn_details.setObjectName("primaryButton")
         self.btn_details.setMinimumHeight(36)
         self.btn_details.clicked.connect(self._show_details)
 
@@ -345,8 +336,10 @@ class ResultsTab(QWidget):
             self.table.setItem(i, 1, QTableWidgetItem(r.get("email") or ""))
             self.table.setItem(i, 2, QTableWidgetItem(r.get("test_title") or ""))
             score_txt = f"{r.get('score') or 0:g}/{r.get('max_score') or 0:g}"
-            self.table.setItem(i, 3, QTableWidgetItem(score_txt))
-            self.table.setItem(i, 4, QTableWidgetItem(f"{r.get('percent') or 0:g}"))
+            pct = float(r.get("percent") or 0)
+            pkind = "ok" if pct >= 70 else "warn" if pct >= 50 else "bad"
+            self.table.setItem(i, 3, colored_item(score_txt, pkind))
+            self.table.setItem(i, 4, colored_item(f"{pct:g} %", pkind))
             self.table.setItem(
                 i,
                 5,
@@ -354,10 +347,12 @@ class ResultsTab(QWidget):
                     _fmt_duration(r.get("start_time"), r.get("end_time"), int(r.get("time_sum") or 0))
                 ),
             )
-            self.table.setItem(i, 6, QTableWidgetItem(str(r.get("vcount") or 0)))
+            vc = int(r.get("vcount") or 0)
+            self.table.setItem(i, 6, colored_item(str(vc), "muted" if vc == 0 else "warn" if vc < 3 else "bad"))
             st = STATUS_UA.get(r.get("status") or "", r.get("status") or "")
             sent = "Надіслано" if r.get("report_sent") else "Не відправлено"
-            self.table.setItem(i, 7, QTableWidgetItem(f"{st} / {sent}"))
+            skind = {"completed": "ok", "blocked": "bad", "in_progress": "info"}.get(r.get("status") or "", "muted")
+            self.table.setItem(i, 7, status_item(f"{st} / {sent}", skind))
             id_item = QTableWidgetItem(str(r["id"]))
             id_item.setData(Qt.ItemDataRole.UserRole, r["id"])
             self.table.setItem(i, 8, id_item)

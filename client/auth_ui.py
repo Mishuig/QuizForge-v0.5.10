@@ -22,6 +22,7 @@ from PyQt6.QtWidgets import (
 )
 
 from core.mailer import MailerError, send_email
+from core.ui_theme import logo_pixmap
 from core.otp import OtpDenied, OtpInvalid, OtpSendLimit, OtpService
 
 logger = logging.getLogger(__name__)
@@ -61,9 +62,9 @@ class EmailScreen(QWidget):
         logo_layout.setSpacing(12)
         logo_label = QLabel()
         try:
-            pixmap = QPixmap("assets/logo-client.svg")
+            pixmap = logo_pixmap("logo-client.svg", 72)
             if not pixmap.isNull():
-                logo_label.setPixmap(pixmap.scaled(72, 72, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+                logo_label.setPixmap(pixmap)
         except Exception:
             pass
         logo_layout.addWidget(logo_label)
@@ -91,6 +92,7 @@ class EmailScreen(QWidget):
         card_layout.addWidget(self.email_edit)
 
         self.btn = QPushButton("Отримати код")
+        self.btn.setObjectName("primaryButton")
         self.btn.setMinimumHeight(48)
         self.btn.clicked.connect(self._submit)
         card_layout.addWidget(self.btn)
@@ -200,9 +202,9 @@ class CodeScreen(QWidget):
         logo_layout.setSpacing(12)
         logo_label = QLabel()
         try:
-            pixmap = QPixmap("assets/logo-client.svg")
+            pixmap = logo_pixmap("logo-client.svg", 44)
             if not pixmap.isNull():
-                logo_label.setPixmap(pixmap.scaled(44, 44, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+                logo_label.setPixmap(pixmap)
         except Exception:
             pass
         logo_layout.addWidget(logo_label)
@@ -238,6 +240,7 @@ class CodeScreen(QWidget):
         layout.addWidget(self.code_edit, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.btn_login = QPushButton("Увійти")
+        self.btn_login.setObjectName("primaryButton")
         self.btn_login.setMinimumHeight(48)
         self.btn_login.setMinimumWidth(200)
         self.btn_login.setMaximumWidth(320)
@@ -360,9 +363,9 @@ class ConsentScreen(QWidget):
         logo_layout.setSpacing(12)
         logo_label = QLabel()
         try:
-            pixmap = QPixmap("assets/logo-client.svg")
+            pixmap = logo_pixmap("logo-client.svg", 44)
             if not pixmap.isNull():
-                logo_label.setPixmap(pixmap.scaled(44, 44, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+                logo_label.setPixmap(pixmap)
         except Exception:
             pass
         logo_layout.addWidget(logo_label)
@@ -380,7 +383,7 @@ class ConsentScreen(QWidget):
         info = QLabel(f"{student.get('full_name', '')}\nТест: {test_title}")
         info.setAlignment(Qt.AlignmentFlag.AlignCenter)
         info.setWordWrap(True)
-        info.setStyleSheet("font-size: 16px;")
+        info.setObjectName("bodyLabel")
         layout.addWidget(info)
 
         rules = QLabel(
@@ -396,10 +399,6 @@ class ConsentScreen(QWidget):
         rules.setObjectName("rulesLabel")
         rules.setWordWrap(True)
         rules.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-        rules.setStyleSheet(
-            "font-size: 18px; line-height: 1.5; padding: 16px; "
-            "background: transparent;"
-        )
         layout.addWidget(rules, stretch=1)
 
         btns = QHBoxLayout()
@@ -410,6 +409,7 @@ class ConsentScreen(QWidget):
         btn_cancel.setMinimumWidth(160)
         btn_cancel.clicked.connect(on_cancel)
         btn_ok = QPushButton("Погоджуюсь і почати")
+        btn_ok.setObjectName("primaryButton")
         btn_ok.setMinimumHeight(48)
         btn_ok.setMinimumWidth(200)
         btn_ok.clicked.connect(on_agree)

@@ -32,6 +32,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from core.config_loader import load_config
+from core.ui_theme import ASSETS, apply_theme
 from core.db import get_db
 from core.otp import OtpService
 from client.auth_ui import CodeScreen, ConsentScreen, EmailScreen
@@ -50,32 +51,6 @@ logging.basicConfig(
 logger = logging.getLogger("client")
 
 
-def apply_styles(app: QApplication, accent: str = "#3b82f6") -> None:
-    # Explicitly load Inter
-    try:
-        from PyQt6.QtGui import QFontDatabase, QFont
-        fid = QFontDatabase.addApplicationFont("/usr/share/fonts/opentype/inter/Inter-Regular.otf")
-        if fid != -1:
-            fams = QFontDatabase.applicationFontFamilies(fid)
-            if fams:
-                app.setFont(QFont(fams[0], 10))
-    except Exception:
-        pass
-    qss_path = Path(__file__).parent / "ui" / "styles.qss"
-    if qss_path.is_file():
-        with open(qss_path, "r", encoding="utf-8") as f:
-            qss = f.read()
-        qss = qss.replace("#3b82f6", accent)
-        # Визначення темної теми системи
-        try:
-            from PyQt6.QtGui import QFontDatabase, QFont,  QGuiApplication
-            scheme = QGuiApplication.styleHints().colorScheme()
-            is_dark = scheme == Qt.ColorScheme.Dark
-        except Exception:
-            is_dark = False
-        app.setStyleSheet(qss)
-
-
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -88,13 +63,12 @@ class ClientWindow(QMainWindow):
         self.org_name = org_name
         self.otp = OtpService(db, config)
 
-        self.setWindowTitle
+        self.setWindowTitle("QuizForge — Тестування")
         try:
             from PyQt6.QtGui import QIcon
-            self.setWindowIcon(QIcon("assets/logo-client.ico"))
+            self.setWindowIcon(QIcon(str(ASSETS / "logo-client.ico")))
         except Exception:
             pass
-        ("QuizForge — Тестування")
         self.setMinimumSize(720, 520)
         self.resize(900, 640)
 
@@ -361,7 +335,7 @@ def main() -> int:
     org = config.get("organization", {})
     org_name = org.get("name", "SecureTest")
     accent = org.get("accent_color", "#3b82f6")
-    apply_styles(app, accent)
+    apply_theme(app, accent)
 
     try:
         db = get_db()

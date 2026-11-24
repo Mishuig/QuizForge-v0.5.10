@@ -17,6 +17,7 @@ from PyQt6.QtWidgets import (
     QCheckBox,
     QHBoxLayout,
     QLabel,
+    QProgressBar,
     QLineEdit,
     QMessageBox,
     QPushButton,
@@ -27,6 +28,7 @@ from PyQt6.QtWidgets import (
 )
 
 from core.db import Database
+from core.ui_theme import logo_pixmap, repolish
 from core.scoring import score_attempt
 from client.monitor import PeriodicScreenshot, ProcessMonitor
 from client.screenshots import capture_screenshot
@@ -93,7 +95,7 @@ class QuizScreen(QWidget):
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(24, 16, 24, 16)
+        root.setContentsMargins(48, 24, 48, 24)
         root.setSpacing(12)
 
         # Логотип + назва (компактний хедер)
@@ -101,9 +103,9 @@ class QuizScreen(QWidget):
         header.setSpacing(10)
         logo_label = QLabel()
         try:
-            pixmap = QPixmap("assets/logo-client.svg")
+            pixmap = logo_pixmap("logo-client.svg", 32)
             if not pixmap.isNull():
-                logo_label.setPixmap(pixmap.scaled(32, 32, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+                logo_label.setPixmap(pixmap)
         except Exception:
             pass
         header.addWidget(logo_label)
@@ -115,11 +117,7 @@ class QuizScreen(QWidget):
 
         # Дебаг-бар (режим розробника)
         self.debug_bar = QLabel("")
-        self.debug_bar.setObjectName("subtitleLabel")
-        self.debug_bar.setStyleSheet(
-            "background: #1e293b; color: #94a3b8; font-family: Consolas, monospace; "
-            "font-size: 11px; padding: 4px 8px; border-radius: 4px;"
-        )
+        self.debug_bar.setObjectName("debugBar")
         self.debug_bar.setWordWrap(True)
         self._dev_mode = bool(self.config.get("developer_mode"))
         self.debug_bar.setVisible(self._dev_mode)
@@ -128,21 +126,25 @@ class QuizScreen(QWidget):
         # Верхня панель: прогрес + таймер
         top = QHBoxLayout()
         self.progress_label = QLabel()
-        self.progress_label.setStyleSheet("font-size: 16px; font-weight: 600;")
+        self.progress_label.setObjectName("progressLabel")
         self.progress_label.setWordWrap(False)
         top.addWidget(self.progress_label)
+        top.addSpacing(16)
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setFixedWidth(320)
+        top.addWidget(self.progress_bar)
         top.addStretch()
         self.timer_label = QLabel()
-        self.timer_label.setStyleSheet(
-            "font-size: 18px; font-weight: 700; color: #dc2626; padding: 4px 12px;"
-        )
+        self.timer_label.setObjectName("timerLabel")
+        self.timer_label.setProperty("low", False)
         top.addWidget(self.timer_label)
         root.addLayout(top)
 
         # Текст питання
         self.question_label = QLabel()
         self.question_label.setWordWrap(True)
-        self.question_label.setStyleSheet("font-size: 18px; font-weight: 500; padding: 12px 0;")
+        self.question_label.setObjectName("questionLabel")
         self.question_label.setSizePolicy(self.question_label.sizePolicy().horizontalPolicy(), self.question_label.sizePolicy().verticalPolicy())
         root.addWidget(self.question_label)
 
@@ -166,6 +168,7 @@ class QuizScreen(QWidget):
         self.btn_prev.setMinimumWidth(120)
         self.btn_prev.clicked.connect(self._prev)
         self.btn_next = QPushButton("Далі →")
+        self.btn_next.setObjectName("primaryButton")
         self.btn_next.setMinimumHeight(48)
         self.btn_next.setMinimumWidth(120)
         self.btn_next.clicked.connect(self._next)
@@ -234,10 +237,9 @@ class QuizScreen(QWidget):
         else:
             self.timer_label.setText(f"⏱ {m:02d}:{sec:02d}")
         if s <= 60:
-            self.timer_label.setStyleSheet(
-                "font-size: 18px; font-weight: 700; color: #fff; "
-                "background: #dc2626; border-radius: 6px; padding: 4px 12px;"
-            )
+            if not self.timer_label.property("low"):
+                self.timer_label.setProperty("low", True)
+                repolish(self.timer_label)
 
     def _show_question(self, index: int) -> None:
         if not self.questions:
@@ -252,6 +254,8 @@ class QuizScreen(QWidget):
 
         total = len(self.questions)
         self.progress_label.setText(f"Питання {index + 1} з {total}")
+        self.progress_bar.setRange(0, max(total, 1))
+        self.progress_bar.setValue(index + 1)
         self.question_label.setText(q["text"])
         self._update_debug()
 
@@ -298,7 +302,8 @@ class QuizScreen(QWidget):
                 self._button_group.setExclusive(True)
                 for opt in opts:
                     rb = QRadioButton(opt["text"])
-                    rb.setStyleSheet("font-size: 16px; padding: 8px;")
+                    rb.setObjectName("optionCard")
+                    rb.setCursor(Qt.CursorShape.PointingHandCursor)
                     rb.setProperty("option_id", opt["id"])
                     if opt["id"] in selected_ids:
                         rb.setChecked(True)
@@ -309,7 +314,8 @@ class QuizScreen(QWidget):
             else:  # multiple
                 for opt in opts:
                     cb = QCheckBox(opt["text"])
-                    cb.setStyleSheet("font-size: 16px; padding: 8px;")
+                    cb.setObjectName("optionCard")
+                    cb.setCursor(Qt.CursorShape.PointingHandCursor)
                     cb.setProperty("option_id", opt["id"])
                     if opt["id"] in selected_ids:
                         cb.setChecked(True)
@@ -675,9 +681,9 @@ class FinishedScreen(QWidget):
         logo_layout.setSpacing(12)
         logo_label = QLabel()
         try:
-            pixmap = QPixmap("assets/logo-client.svg")
+            pixmap = logo_pixmap("logo-client.svg", 48)
             if not pixmap.isNull():
-                logo_label.setPixmap(pixmap.scaled(48, 48, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+                logo_label.setPixmap(pixmap)
         except Exception:
             pass
         logo_layout.addWidget(logo_label)
@@ -695,10 +701,11 @@ class FinishedScreen(QWidget):
         thanks = QLabel("Дякуємо за участь!")
         thanks.setAlignment(Qt.AlignmentFlag.AlignCenter)
         thanks.setWordWrap(True)
-        thanks.setStyleSheet("font-size: 18px;")
+        thanks.setObjectName("bodyLabel")
         card_layout.addWidget(thanks)
 
         btn_close = QPushButton("Закрити")
+        btn_close.setObjectName("primaryButton")
         btn_close.setMinimumHeight(48)
         btn_close.clicked.connect(self._close_app)
         card_layout.addWidget(btn_close)

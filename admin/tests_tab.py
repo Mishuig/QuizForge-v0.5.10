@@ -96,23 +96,13 @@ class TestsTab(QWidget):
     # ------------------------------------------------------------------ UI
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(16, 12, 16, 12)
+        root.setContentsMargins(32, 24, 32, 20)
         root.setSpacing(12)
 
-        # Хедер з лого
         header = QHBoxLayout()
         header.setSpacing(10)
-        logo_label = QLabel()
-        try:
-            pixmap = QPixmap("assets/logo-admin.svg")
-            if not pixmap.isNull():
-                logo_label.setPixmap(pixmap.scaled(40, 40, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
-        except Exception:
-            pass
-        header.addWidget(logo_label)
         title = QLabel("Тести")
         title.setObjectName("titleLabel")
-        title.setStyleSheet("font-size: 18px;")
         header.addWidget(title)
         header.addStretch()
         root.addLayout(header)
@@ -135,6 +125,7 @@ class TestsTab(QWidget):
         tests_btns = QHBoxLayout()
         tests_btns.setSpacing(8)
         self.btn_new_test = QPushButton("Новий тест")
+        self.btn_new_test.setObjectName("primaryButton")
         self.btn_new_test.setMinimumHeight(36)
         self.btn_new_test.clicked.connect(self._new_test)
         self.btn_delete_test = QPushButton("Видалити")
@@ -199,6 +190,7 @@ class TestsTab(QWidget):
         props_form.addRow("Прохідний бал:", self.pass_spin)
 
         save_test_btn = QPushButton("Зберегти властивості тесту")
+        save_test_btn.setObjectName("primaryButton")
         save_test_btn.clicked.connect(self._save_test_props)
         props_form.addRow(save_test_btn)
 
@@ -269,12 +261,8 @@ class TestsTab(QWidget):
 
         # Підказка-правила залежно від типу питання
         self.type_hint = QLabel()
-        self.type_hint.setObjectName("subtitleLabel")
+        self.type_hint.setObjectName("hintLabel")
         self.type_hint.setWordWrap(True)
-        self.type_hint.setStyleSheet(
-            "background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; "
-            "padding: 8px; color: #1e40af; font-size: 12px;"
-        )
         form.addRow(self.type_hint)
 
         q_right.addLayout(form)
@@ -316,6 +304,7 @@ class TestsTab(QWidget):
         self.open_group.hide()
 
         self.btn_save_q = QPushButton("Зберегти питання")
+        self.btn_save_q.setObjectName("primaryButton")
         self.btn_save_q.clicked.connect(self._save_question)
         q_right.addWidget(self.btn_save_q)
         q_right.addStretch()

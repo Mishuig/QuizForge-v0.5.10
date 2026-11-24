@@ -32,9 +32,12 @@ from PyQt6.QtWidgets import (
 )
 
 from core.db import Database
+from core.ui_theme import status_item
 from core.mailer import MailerError, send_test_message
 
 logger = logging.getLogger(__name__)
+
+STATUS_KIND = {"waiting": "muted", "in_progress": "info", "completed": "ok", "blocked": "bad"}
 
 STATUS_LABELS = {
     "waiting": "Очікує",
@@ -147,23 +150,13 @@ class StudentsTab(QWidget):
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
-        root.setContentsMargins(16, 12, 16, 12)
+        root.setContentsMargins(32, 24, 32, 20)
         root.setSpacing(12)
 
-        # Компактний хедер з лого
         header = QHBoxLayout()
         header.setSpacing(10)
-        logo_label = QLabel()
-        try:
-            pixmap = QPixmap("assets/logo-admin.svg")
-            if not pixmap.isNull():
-                logo_label.setPixmap(pixmap.scaled(40, 40, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
-        except Exception:
-            pass
-        header.addWidget(logo_label)
         title = QLabel("Користувачі")
         title.setObjectName("titleLabel")
-        title.setStyleSheet("font-size: 18px;")
         header.addWidget(title)
         header.addStretch()
         root.addLayout(header)
@@ -210,6 +203,7 @@ class StudentsTab(QWidget):
         btns = QHBoxLayout()
         btns.setSpacing(8)
         self.btn_add = QPushButton("Додати")
+        self.btn_add.setObjectName("primaryButton")
         self.btn_add.setMinimumHeight(36)
         self.btn_add.clicked.connect(self._add_student)
         self.btn_edit = QPushButton("Редагувати")
@@ -296,7 +290,7 @@ class StudentsTab(QWidget):
             self.table.setItem(i, 2, QTableWidgetItem(r.get("test_title") or "—"))
             attempts_text = f"{r.get('used_attempts') or 0} / {r.get('attempts_allowed') or 1}"
             self.table.setItem(i, 3, QTableWidgetItem(attempts_text))
-            self.table.setItem(i, 4, QTableWidgetItem(status_text))
+            self.table.setItem(i, 4, status_item(status_text, STATUS_KIND.get(status, "muted")))
             id_item = QTableWidgetItem(str(r["id"]))
             id_item.setData(Qt.ItemDataRole.UserRole, r["id"])
             self.table.setItem(i, 5, id_item)
